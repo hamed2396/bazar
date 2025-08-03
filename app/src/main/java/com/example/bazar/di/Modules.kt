@@ -14,7 +14,7 @@ import org.koin.dsl.module
 
 
 val myModules = module {
-    factory {
+    single {
         createApiService()
     }
     single {

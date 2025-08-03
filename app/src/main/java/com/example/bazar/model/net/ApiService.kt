@@ -26,11 +26,16 @@ fun createApiService(): ApiService {
     val okHttpClient = OkHttpClient().newBuilder().addInterceptor {
         val oldRequest = it.request()
         val newRequest = oldRequest.newBuilder()
-        if (TokenInMemory.token != null) {
+        if (TokenInMemory.token != null){
+
             newRequest.addHeader("Authorization", TokenInMemory.token!!)
-            newRequest.method(oldRequest.method,)
-        }.build()
-    }
-    return Retrofit.Builder().addConverterFactory(GsonConverterFactory.create())
+        }
+
+            newRequest.method(oldRequest.method, oldRequest.body)
+          it.proceed(newRequest.build())
+
+    }.build()
+
+    return Retrofit.Builder().client(okHttpClient).addConverterFactory(GsonConverterFactory.create())
         .build().create(ApiService::class.java)
 }
