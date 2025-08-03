@@ -11,6 +11,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.bazar.di.myModules
+import com.example.bazar.model.repository.TokenInMemory
+import com.example.bazar.model.repository.user.UserRepository
 import com.example.bazar.ui.features.IntroScreen
 import com.example.bazar.ui.features.signin.SignInScreen
 import com.example.bazar.ui.features.signup.SignUpScreen
@@ -20,6 +22,7 @@ import com.example.bazar.util.Constants.PRODUCT_ID
 import com.example.bazar.util.MyScreens
 import dev.burnoo.cokoin.Koin
 import dev.burnoo.cokoin.navigation.KoinNavHost
+import dev.burnoo.cokoin.get
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.loadKoinModules
 
@@ -32,11 +35,12 @@ class MainActivity : ComponentActivity() {
                 androidContext(this@MainActivity)
             }) {
                 MainAppTheme {
+                    val repository: UserRepository = get()
+                    repository.loadToken()
                     DuniBazaarUi()
                 }
 
             }
-
 
 
         }
@@ -48,11 +52,16 @@ fun DuniBazaarUi() {
     val navController = rememberNavController()
     KoinNavHost(
         navController = navController,
-        startDestination = MyScreens.IntroScreen.route
+        startDestination = MyScreens.MainScreen.route
 
     ) {
         composable(MyScreens.MainScreen.route) {
-            MainScreen()
+            if (TokenInMemory.token != null && TokenInMemory.token != "") {
+
+                MainScreen()
+            } else {
+                IntroScreen()
+            }
         }
 
         composable(
@@ -123,7 +132,7 @@ fun ProductScreen(productId: Int) {
 
 @Composable
 fun MainScreen() {
-    TODO("Not yet implemented")
+
 }
 
 @Preview(showBackground = true)

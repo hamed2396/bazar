@@ -10,19 +10,20 @@ import com.example.bazar.ui.features.signin.SignInViewModel
 import com.example.bazar.ui.features.signup.SignUpViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 
 val myModules = module {
-    single {
+    factory<ApiService> {
         createApiService()
     }
     single {
         androidContext().getSharedPreferences("data", Context.MODE_PRIVATE)
     }
-    factory {
+    single  {
         UserRepositoryImpl(get(),get())
-    }
+    } bind UserRepository::class
     viewModel { SignUpViewModel(get()) }
     viewModel { SignInViewModel(get()) }
 

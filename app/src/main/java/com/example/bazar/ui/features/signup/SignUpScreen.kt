@@ -50,6 +50,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.bazar.R
 import com.example.bazar.ui.theme.blue
 import com.example.bazar.ui.theme.shapes
+import com.example.bazar.util.Constants.VALUE_SUCCESS
 import com.example.bazar.util.MyScreens
 import com.example.bazar.util.NetworkChecker
 import dev.burnoo.cokoin.navigation.getNavController
@@ -61,6 +62,7 @@ import java.util.regex.Pattern
 fun SignUpScreen() {
     val navigation = getNavController()
     val viewModel = getViewModel<SignUpViewModel>()
+    val context = LocalContext.current
     Box {
         Box(
             modifier = Modifier
@@ -79,7 +81,18 @@ fun SignUpScreen() {
             IconApp()
 
             MainCard(viewModel = viewModel, navigation = navigation) {
+                viewModel.signUpUser {
+                    if (it == VALUE_SUCCESS) {
+                        navigation.navigate(MyScreens.MainScreen.route) {
+                            popUpTo(MyScreens.IntroScreen.route) {
+                                inclusive = true
+                            }
+                        }
 
+                    } else {
+                        showToast(context = context, it)
+                    }
+                }
             }
 
         }
@@ -239,7 +252,7 @@ fun MainCard(
 
                     else -> {
                         if (NetworkChecker(context).isInternetConnected)
-                        signUpEvent() else showToast(context,"Please Connect to internet")
+                            signUpEvent() else showToast(context, "Please Connect to internet")
                     }
                 }
 
@@ -261,6 +274,7 @@ fun MainCard(
         }
     }
 }
+
 private fun areFieldsFilled(vararg fields: String): Boolean {
     return fields.all { it.isNotEmpty() }
 }

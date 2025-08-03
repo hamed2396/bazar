@@ -2,6 +2,7 @@ package com.example.bazar.model.net
 
 import com.example.bazar.model.data.LoginResponse
 import com.example.bazar.model.repository.TokenInMemory
+import com.example.bazar.util.Constants
 import com.google.gson.JsonObject
 import okhttp3.OkHttpClient
 import retrofit2.Call
@@ -36,6 +37,6 @@ fun createApiService(): ApiService {
 
     }.build()
 
-    return Retrofit.Builder().client(okHttpClient).addConverterFactory(GsonConverterFactory.create())
+    return Retrofit.Builder().baseUrl(Constants.BASE_URL).client(okHttpClient).addConverterFactory(GsonConverterFactory.create())
         .build().create(ApiService::class.java)
 }

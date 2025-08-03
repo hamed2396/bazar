@@ -49,6 +49,7 @@ import androidx.navigation.NavController
 import com.example.bazar.R
 import com.example.bazar.ui.theme.blue
 import com.example.bazar.ui.theme.shapes
+import com.example.bazar.util.Constants.VALUE_SUCCESS
 import com.example.bazar.util.MyScreens
 import com.example.bazar.util.NetworkChecker
 import dev.burnoo.cokoin.navigation.getNavController
@@ -58,6 +59,7 @@ import dev.burnoo.cokoin.viewmodel.getViewModel
 fun SignInScreen() {
     val navigation = getNavController()
     val viewModel = getViewModel<SignInViewModel>()
+    val context=LocalContext.current
     Box {
         Box(
             modifier = Modifier
@@ -76,7 +78,18 @@ fun SignInScreen() {
             IconApp()
 
             MainCard(viewModel = viewModel, navigation = navigation) {
+                viewModel.signInUser {
+                    if (it == VALUE_SUCCESS) {
+                        navigation.navigate(MyScreens.MainScreen.route) {
+                            popUpTo(MyScreens.IntroScreen.route) {
+                                inclusive = true
+                            }
+                        }
 
+                    } else {
+                        showToast(context = context, it)
+                    }
+                }
             }
 
         }
