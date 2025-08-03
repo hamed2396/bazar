@@ -5,12 +5,31 @@ import com.example.bazar.model.data.Product
 import com.example.bazar.model.db.ProductDao
 import com.example.bazar.model.net.ApiService
 
-class ProductRepositoryImpl(private val api: ApiService,private val dao: ProductDao) : ProductRepository{
-    override suspend fun getAllProducts(): List<Product> {
-        TODO("Not yet implemented")
+class ProductRepositoryImpl(private val api: ApiService, private val dao: ProductDao) :
+    ProductRepository {
+    override suspend fun getAllProducts(isInternetConnected: Boolean): List<Product> {
+        if (isInternetConnected) {
+            val data = api.getAllProducts()
+            if (data.success) {
+                dao.insertOrUpdate(data.products)
+                return data.products
+            }
+
+
+        } else {
+            return dao.getAllProducts()
+        }
+        return listOf()
     }
 
-    override suspend fun getAllAds(): List<Ads> {
-        TODO("Not yet implemented")
+    override suspend fun getAds(isInternetConnected: Boolean): List<Ads> {
+        if (isInternetConnected) {
+            val data = api.getAds()
+            if (data.success){
+                return data.ads
+            }
+
+        }
+        return listOf()
     }
 }

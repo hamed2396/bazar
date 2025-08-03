@@ -1,8 +1,8 @@
 package com.example.bazar.model.net
 
-import com.example.bazar.model.data.Ads
+import com.example.bazar.model.data.AdsResponse
 import com.example.bazar.model.data.LoginResponse
-import com.example.bazar.model.data.Product
+import com.example.bazar.model.data.ProductResponse
 import com.example.bazar.model.repository.TokenInMemory
 import com.example.bazar.util.Constants
 import com.google.gson.JsonObject
@@ -25,10 +25,10 @@ interface ApiService {
     fun refreshToken(): Call<LoginResponse>
 
     @GET("getProducts")
-    suspend fun getAllProducts(): Product
+    suspend fun getAllProducts(): ProductResponse
 
     @GET("getSliderPics")
-    suspend fun getSliderPics(): Ads
+    suspend fun getAds(): AdsResponse
 }
 
 fun createApiService(): ApiService {
