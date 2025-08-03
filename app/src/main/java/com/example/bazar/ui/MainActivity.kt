@@ -14,6 +14,7 @@ import com.example.bazar.di.myModules
 import com.example.bazar.model.repository.TokenInMemory
 import com.example.bazar.model.repository.user.UserRepository
 import com.example.bazar.ui.features.IntroScreen
+import com.example.bazar.ui.features.main.MainScreen
 import com.example.bazar.ui.features.signin.SignInScreen
 import com.example.bazar.ui.features.signup.SignUpScreen
 import com.example.bazar.ui.theme.MainAppTheme
@@ -130,10 +131,6 @@ fun ProductScreen(productId: Int) {
     TODO("Not yet implemented")
 }
 
-@Composable
-fun MainScreen() {
-
-}
 
 @Preview(showBackground = true)
 @Composable

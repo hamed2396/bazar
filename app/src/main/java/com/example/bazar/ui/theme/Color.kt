@@ -12,7 +12,7 @@ val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 val colorBackGroundMain = Color(255, 255, 255, 255)
 val searchItemBackGround = Color(251, 250, 255)
-val cardViewBackGround = Color(218, 218, 218)
+val cardViewBackGround = Color(9, 121, 223, 8)
 val blue = Color(9, 121, 223)
 
 
