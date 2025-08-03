@@ -1,6 +1,8 @@
 package com.example.bazar.model.net
 
+import com.example.bazar.model.data.Ads
 import com.example.bazar.model.data.LoginResponse
+import com.example.bazar.model.data.Product
 import com.example.bazar.model.repository.TokenInMemory
 import com.example.bazar.util.Constants
 import com.google.gson.JsonObject
@@ -21,22 +23,29 @@ interface ApiService {
 
     @GET("refreshToken")
     fun refreshToken(): Call<LoginResponse>
+
+    @GET("getProducts")
+    suspend fun getAllProducts(): Product
+
+    @GET("getSliderPics")
+    suspend fun getSliderPics(): Ads
 }
 
 fun createApiService(): ApiService {
     val okHttpClient = OkHttpClient().newBuilder().addInterceptor {
         val oldRequest = it.request()
         val newRequest = oldRequest.newBuilder()
-        if (TokenInMemory.token != null){
+        if (TokenInMemory.token != null) {
 
             newRequest.addHeader("Authorization", TokenInMemory.token!!)
         }
 
-            newRequest.method(oldRequest.method, oldRequest.body)
-          it.proceed(newRequest.build())
+        newRequest.method(oldRequest.method, oldRequest.body)
+        it.proceed(newRequest.build())
 
     }.build()
 
-    return Retrofit.Builder().baseUrl(Constants.BASE_URL).client(okHttpClient).addConverterFactory(GsonConverterFactory.create())
+    return Retrofit.Builder().baseUrl(Constants.BASE_URL).client(okHttpClient)
+        .addConverterFactory(GsonConverterFactory.create())
         .build().create(ApiService::class.java)
 }
