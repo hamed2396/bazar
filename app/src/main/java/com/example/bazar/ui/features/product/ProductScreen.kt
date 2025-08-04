@@ -1,6 +1,7 @@
 package com.example.bazar.ui.features.product
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -29,6 +30,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
@@ -76,11 +78,49 @@ fun ProductScreen(productId: String) {
             ProductToolBar(
                 productName = "Details",
                 badgeNumber = 4,
-                onCartClicked = {},
+                onCartClicked = {
+                    if (NetworkChecker(context).isInternetConnected)
+                        navigation.navigate(MyScreens.CartScreen.route)
+                    else Toast.makeText(context, "connect to intenet", Toast.LENGTH_SHORT).show()
+                },
                 onBackClicked = { navigation.popBackStack() })
         }
         AddToCart()
     }
+}
+
+@Composable
+fun ProductDesign(data: Product, onCategoryClicked: (String) -> Unit) {
+
+    AsyncImage(
+        model = data.imgUrl,
+        contentDescription = null,
+        contentScale = ContentScale.Crop,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp)
+            .clip(shapes.medium)
+    )
+    Text(
+        text = data.name,
+        fontSize = 20.sp,
+        fontWeight = FontWeight.Medium,
+        modifier = Modifier.padding(14.dp)
+    )
+    Text(
+        text = data.detailText,
+        fontSize = 15.sp,
+        fontWeight = FontWeight.Medium,
+        modifier = Modifier.padding(4.dp), textAlign = TextAlign.Justify
+    )
+    TextButton(onClick = { onCategoryClicked(data.category) }) {
+        Text(
+            text = "#" + data.category,
+            fontSize = 13.sp,
+
+        )
+    }
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
