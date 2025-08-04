@@ -86,7 +86,7 @@ fun MainScreen() {
                 )
             })
         CategoryBar(Constants.CATEGORY){
-            navigation.navigate(MyScreens.CartScreen.route + "/" + it)
+            navigation.navigate(MyScreens.CategoryScreen.route + "/" + it)
         }
 
         val productDataState = viewModel.products
