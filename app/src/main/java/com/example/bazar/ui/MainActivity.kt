@@ -67,9 +67,9 @@ fun DuniBazaarUi() {
 
         composable(
             route = MyScreens.ProductScreen.route + "/" + "{$PRODUCT_ID}",
-            arguments = listOf(navArgument(PRODUCT_ID) { type = NavType.IntType })
+            arguments = listOf(navArgument(PRODUCT_ID) { type = NavType.StringType })
         ) {
-            ProductScreen(it.arguments!!.getInt(PRODUCT_ID, -1))
+            ProductScreen(it.arguments!!.getString(PRODUCT_ID, ""))
         }
 
         composable(
@@ -95,20 +95,12 @@ fun DuniBazaarUi() {
             SignInScreen()
         }
 
-        composable(MyScreens.IntroScreen.route) {
-            IntroScreen()
-        }
 
-        composable(MyScreens.NoInternetScreen.route) {
-            NoInternetScreen()
-        }
+
+
     }
 }
 
-@Composable
-fun NoInternetScreen() {
-    TODO("Not yet implemented")
-}
 
 
 @Composable
@@ -127,7 +119,7 @@ fun CategoryScreen(categoryName: String) {
 }
 
 @Composable
-fun ProductScreen(productId: Int) {
+fun ProductScreen(productId: String) {
     TODO("Not yet implemented")
 }
 

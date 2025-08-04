@@ -52,7 +52,9 @@ import com.example.bazar.ui.theme.blue
 import com.example.bazar.ui.theme.cardViewBackGround
 import com.example.bazar.ui.theme.shapes
 import com.example.bazar.util.Constants
+import com.example.bazar.util.MyScreens
 import com.example.bazar.util.NetworkChecker
+import dev.burnoo.cokoin.navigation.getNavController
 import dev.burnoo.cokoin.viewmodel.getViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -64,6 +66,7 @@ fun MainScreen() {
     val context = LocalContext.current
     val viewModel =
         getViewModel<MainViewModel>(parameters = { parametersOf(NetworkChecker(context).isInternetConnected) })
+    val navigation = getNavController()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -74,67 +77,78 @@ fun MainScreen() {
         if (viewModel.showProgressBar) {
             LinearProgressIndicator(color = blue, modifier = Modifier.fillMaxWidth())
         }
-        TopToolBar()
-        CategoryBar(Constants.CATEGORY)
+        TopToolBar(
+            onCartClicked = { navigation.navigate(MyScreens.CartScreen.route) },
+            onProfileClicked = {
+                navigation.navigate(
+                    MyScreens.ProfileScreen.route
+                )
+            })
+        CategoryBar(Constants.CATEGORY){
+            navigation.navigate(MyScreens.CartScreen.route + "/" + it)
+        }
+
         val productDataState = viewModel.products
         val adsDataState = viewModel.ads
-        ProductSubjectList(Constants.TAGS, productDataState, adsDataState)
+        ProductSubjectList(Constants.TAGS, productDataState, adsDataState){
+            navigation.navigate(MyScreens.ProductScreen.route)
+        }
 
     }
 }
 
 @Composable
-fun ProductSubjectList(tags: List<String>, products: List<Product>, ads: List<Ads>) {
+fun ProductSubjectList(tags: List<String>, products: List<Product>, ads: List<Ads>,onProductClicked:(String)->Unit) {
     val context = LocalContext.current
 
-    if (products.isEmpty()){
-        Toast.makeText(context, "connect to internet", Toast.LENGTH_SHORT).show()
-    }else{
+    if (products.isNotEmpty()) {
         tags.forEachIndexed { index, _ ->
             val tagData = products.filter { product ->
                 product.tags == tags[index]
             }
-            ProductSubject(tags[index], tagData.shuffled())
+            ProductSubject(tags[index], tagData.shuffled(),onProductClicked)
             if (ads.size >= 2) {
 
-                if (index == 1 || index == 2) BigPicture(ads[index.minus(1)])
+                if (index == 1 || index == 2) BigPicture(ads[index.minus(1)],onProductClicked)
             }
         }
     }
+
+
 
 }
 
 
 @Composable
-fun ProductSubject(subject: String, data: List<Product>) {
+fun ProductSubject(subject: String, data: List<Product>,onProductClicked:(String)->Unit) {
     Column(modifier = Modifier.padding(top = 32.dp)) {
         Text(
             text = subject,
             modifier = Modifier.padding(start = 16.dp),
             style = MaterialTheme.typography.titleLarge
         )
-        ProductBar(data)
+        ProductBar(data,onProductClicked)
     }
 }
 
 @Composable
-fun ProductBar(data: List<Product>) {
+fun ProductBar(data: List<Product>,onProductClicked: (String) -> Unit) {
     LazyRow(
         modifier = Modifier.padding(top = 16.dp), contentPadding = PaddingValues(end = 16.dp)
     ) {
         items(data.size) {
 
-            ProductItem(data[it])
+            ProductItem(data[it],onProductClicked)
         }
     }
 }
 
 @Composable
-fun ProductItem(product: Product) {
+fun ProductItem(product: Product,onProductClicked:(String)->Unit) {
     val context = LocalContext.current
     Card(
         modifier = Modifier
-            .clickable {}
+            .clickable {onProductClicked(product.productId)}
             .padding(start = 16.dp),
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp),
         shape = shapes.medium) {
@@ -174,42 +188,38 @@ fun ProductItem(product: Product) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopToolBar() {
+fun TopToolBar(onCartClicked: () -> Unit, onProfileClicked: () -> Unit) {
     TopAppBar(colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White), title = {
         Text(text = "Duni Bazzar")
     }, actions = {
-        IconButton(onClick = {
-
-        }) {
+        IconButton(onClick = { onCartClicked() }) {
             Icon(Icons.Default.ShoppingCart, null)
         }
-        IconButton(onClick = {
-
-        }) {
+        IconButton(onClick = { onProfileClicked() }) {
             Icon(Icons.Default.Person, null)
         }
     })
 }
 
 @Composable
-fun CategoryBar(categoryList: List<Pair<String, Int>>) {
+fun CategoryBar(categoryList: List<Pair<String, Int>>, onCategoryClicked: (String) -> Unit) {
     LazyRow(Modifier.padding(top = 16.dp), contentPadding = PaddingValues(end = 16.dp)) {
         items(categoryList.size) {
-            CategoryItems(category = categoryList[it])
+            CategoryItems(category = categoryList[it], onCategoryClicked = onCategoryClicked)
         }
     }
 }
 
 @Composable
-fun BigPicture(ads: Ads) {
-    val context=LocalContext.current
+fun BigPicture(ads: Ads,onProductClicked:(String)->Unit) {
+    val context = LocalContext.current
     AsyncImage(
         modifier = Modifier
             .fillMaxWidth()
             .height(260.dp)
             .padding(top = 32.dp, start = 16.dp, end = 16.dp)
             .clip(shapes.medium)
-            .clickable {},
+            .clickable {onProductClicked(ads.productId)},
         model = ImageRequest.Builder(context).data(ads.imageURL).crossfade(500).build(),
         contentDescription = null,
         contentScale = ContentScale.Crop
@@ -217,10 +227,14 @@ fun BigPicture(ads: Ads) {
 }
 
 @Composable
-fun CategoryItems(modifier: Modifier = Modifier, category: Pair<String, Int>) {
+fun CategoryItems(
+    modifier: Modifier = Modifier,
+    category: Pair<String, Int>,
+    onCategoryClicked: (String) -> Unit
+) {
     Column(
         modifier = modifier
-            .clickable {}
+            .clickable { onCategoryClicked(category.first) }
             .padding(start = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally) {
 
