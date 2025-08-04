@@ -10,6 +10,7 @@ import com.example.bazar.model.data.Ads
 import com.example.bazar.model.data.Product
 import com.example.bazar.model.repository.product.ProductRepository
 import com.example.bazar.model.repository.user.UserRepository
+import com.example.bazar.util.coroutineExceptionHandler
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -25,7 +26,7 @@ class MainViewModel(private val repository: ProductRepository, connected: Boolea
     var products by mutableStateOf(listOf<Product>())
     var ads by mutableStateOf(listOf<Ads>())
     var showProgressBar by mutableStateOf(false)
-    fun refreshData(connected: Boolean) = viewModelScope.launch {
+    fun refreshData(connected: Boolean) = viewModelScope.launch(coroutineExceptionHandler) {
         if (connected) showProgressBar = true
         val products = async { repository.getAllProducts(connected) }
         val ads = async { repository.getAds(connected) }

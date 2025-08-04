@@ -16,6 +16,7 @@ import com.example.bazar.model.repository.user.UserRepository
 import com.example.bazar.ui.features.IntroScreen
 import com.example.bazar.ui.features.cateory.CategoryScreen
 import com.example.bazar.ui.features.main.MainScreen
+import com.example.bazar.ui.features.product.ProductScreen
 import com.example.bazar.ui.features.signin.SignInScreen
 import com.example.bazar.ui.features.signup.SignUpScreen
 import com.example.bazar.ui.theme.MainAppTheme
@@ -70,7 +71,7 @@ fun DuniBazaarUi() {
             route = MyScreens.ProductScreen.route + "/" + "{$PRODUCT_ID}",
             arguments = listOf(navArgument(PRODUCT_ID) { type = NavType.StringType })
         ) {
-            ProductScreen(it.arguments!!.getString(PRODUCT_ID, ""))
+            ProductScreen(it.arguments!!.getString(PRODUCT_ID, "null"))
         }
 
         composable(
@@ -116,10 +117,6 @@ fun ProfileScreen() {
 
 
 
-@Composable
-fun ProductScreen(productId: String) {
-    TODO("Not yet implemented")
-}
 
 
 @Preview(showBackground = true)

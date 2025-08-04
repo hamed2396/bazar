@@ -92,7 +92,7 @@ fun MainScreen() {
         val productDataState = viewModel.products
         val adsDataState = viewModel.ads
         ProductSubjectList(Constants.TAGS, productDataState, adsDataState){
-            navigation.navigate(MyScreens.ProductScreen.route)
+            navigation.navigate(MyScreens.ProductScreen.route+ "/" + it)
         }
 
     }

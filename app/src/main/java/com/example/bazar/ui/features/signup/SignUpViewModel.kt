@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bazar.model.repository.user.UserRepository
+import com.example.bazar.util.coroutineExceptionHandler
 import kotlinx.coroutines.launch
 
 class SignUpViewModel(private val repository: UserRepository) : ViewModel() {
@@ -13,7 +14,7 @@ class SignUpViewModel(private val repository: UserRepository) : ViewModel() {
     val password = MutableLiveData("")
     val confirmPassword = MutableLiveData("")
     fun signUpUser(loggingEvent: (String) -> Unit) {
-        viewModelScope.launch {
+        viewModelScope.launch(coroutineExceptionHandler) {
 
             val result =
                 repository.signUp(name.value!!, email.value!!, password.value!!, password.value!!)

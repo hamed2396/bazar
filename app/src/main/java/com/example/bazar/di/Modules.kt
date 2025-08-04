@@ -12,6 +12,7 @@ import com.example.bazar.model.repository.user.UserRepository
 import com.example.bazar.model.repository.user.UserRepositoryImpl
 import com.example.bazar.ui.features.cateory.CategoryViewModel
 import com.example.bazar.ui.features.main.MainViewModel
+import com.example.bazar.ui.features.product.ProductViewModel
 import com.example.bazar.ui.features.signin.SignInViewModel
 import com.example.bazar.ui.features.signup.SignUpViewModel
 import org.koin.android.ext.koin.androidContext
@@ -45,5 +46,6 @@ val myModules = module {
 
     viewModel { (connected: Boolean) -> MainViewModel(get(), get()) }
     viewModel { CategoryViewModel(get()) }
+    viewModel { ProductViewModel() }
 
 }
