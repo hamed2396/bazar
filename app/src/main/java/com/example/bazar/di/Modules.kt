@@ -10,6 +10,7 @@ import com.example.bazar.model.repository.product.ProductRepository
 import com.example.bazar.model.repository.product.ProductRepositoryImpl
 import com.example.bazar.model.repository.user.UserRepository
 import com.example.bazar.model.repository.user.UserRepositoryImpl
+import com.example.bazar.ui.features.cateory.CategoryViewModel
 import com.example.bazar.ui.features.main.MainViewModel
 import com.example.bazar.ui.features.signin.SignInViewModel
 import com.example.bazar.ui.features.signup.SignUpViewModel
@@ -43,5 +44,6 @@ val myModules = module {
     } bind ProductRepository::class
 
     viewModel { (connected: Boolean) -> MainViewModel(get(), get()) }
+    viewModel { CategoryViewModel(get()) }
 
 }

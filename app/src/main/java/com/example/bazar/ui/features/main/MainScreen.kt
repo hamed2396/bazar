@@ -1,5 +1,6 @@
 package com.example.bazar.ui.features.main
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -99,13 +100,14 @@ fun MainScreen() {
 
 @Composable
 fun ProductSubjectList(tags: List<String>, products: List<Product>, ads: List<Ads>,onProductClicked:(String)->Unit) {
-    val context = LocalContext.current
+
 
     if (products.isNotEmpty()) {
         tags.forEachIndexed { index, _ ->
             val tagData = products.filter { product ->
                 product.tags == tags[index]
             }
+            Log.e("myTag", "$tagData", )
             ProductSubject(tags[index], tagData.shuffled(),onProductClicked)
             if (ads.size >= 2) {
 
@@ -148,7 +150,7 @@ fun ProductItem(product: Product,onProductClicked:(String)->Unit) {
     val context = LocalContext.current
     Card(
         modifier = Modifier
-            .clickable {onProductClicked(product.productId)}
+            .clickable { onProductClicked(product.productId) }
             .padding(start = 16.dp),
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp),
         shape = shapes.medium) {
@@ -219,7 +221,7 @@ fun BigPicture(ads: Ads,onProductClicked:(String)->Unit) {
             .height(260.dp)
             .padding(top = 32.dp, start = 16.dp, end = 16.dp)
             .clip(shapes.medium)
-            .clickable {onProductClicked(ads.productId)},
+            .clickable { onProductClicked(ads.productId) },
         model = ImageRequest.Builder(context).data(ads.imageURL).crossfade(500).build(),
         contentDescription = null,
         contentScale = ContentScale.Crop

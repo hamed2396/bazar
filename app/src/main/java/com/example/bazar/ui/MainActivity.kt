@@ -14,6 +14,7 @@ import com.example.bazar.di.myModules
 import com.example.bazar.model.repository.TokenInMemory
 import com.example.bazar.model.repository.user.UserRepository
 import com.example.bazar.ui.features.IntroScreen
+import com.example.bazar.ui.features.cateory.CategoryScreen
 import com.example.bazar.ui.features.main.MainScreen
 import com.example.bazar.ui.features.signin.SignInScreen
 import com.example.bazar.ui.features.signup.SignUpScreen
@@ -113,10 +114,7 @@ fun ProfileScreen() {
     TODO("Not yet implemented")
 }
 
-@Composable
-fun CategoryScreen(categoryName: String) {
-    TODO("Not yet implemented")
-}
+
 
 @Composable
 fun ProductScreen(productId: String) {
