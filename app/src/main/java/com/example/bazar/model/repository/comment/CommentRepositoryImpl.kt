@@ -19,6 +19,23 @@ class CommentRepositoryImpl(private val api: ApiService) :
         }
         return listOf()
     }
+
+    override suspend fun addNewComment(
+        productId: String,
+        text: String,
+        onSuccess: (String) -> Unit
+    ) {
+        val jsonObject = JsonObject().apply {
+            addProperty("productId", productId)
+            addProperty("text", text)
+        }
+        val result=api.addComments(jsonObject)
+        if (result.success) {
+            onSuccess(result.message)
+        }else{
+            onSuccess(result.message)
+        }
+    }
 }
 
 

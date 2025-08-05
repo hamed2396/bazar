@@ -6,6 +6,8 @@ import androidx.room.Room
 import com.example.bazar.model.db.AppDataBase
 import com.example.bazar.model.net.ApiService
 import com.example.bazar.model.net.createApiService
+import com.example.bazar.model.repository.cart.CartRepository
+import com.example.bazar.model.repository.cart.CartRepositoryImpl
 import com.example.bazar.model.repository.comment.CommentRepository
 import com.example.bazar.model.repository.comment.CommentRepositoryImpl
 import com.example.bazar.model.repository.product.ProductRepository
@@ -52,7 +54,10 @@ val myModules = module {
     single {
         CommentRepositoryImpl(get())
     } bind CommentRepository::class
+    single {
+        CartRepositoryImpl(get())
 
-    viewModel { ProductViewModel(get(),get()) }
+    } bind CartRepository::class
+    viewModel { ProductViewModel(get(), get(),get()) }
 
 }

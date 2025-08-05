@@ -100,8 +100,21 @@ fun ProductScreen(productId: String) {
                 if (NetworkChecker(context).isInternetConnected) navigation.navigate(MyScreens.CartScreen.route)
                 else Toast.makeText(context, "connect to intenet", Toast.LENGTH_SHORT).show()
             }, onBackClicked = { navigation.popBackStack() })
-            ProductItem(data = viewModel.product, comments = viewModel.comments) {
+            ProductItem(data = viewModel.product, onAddNewComment = {
+                viewModel.addNewComment(productId, it) {
+                    Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                }
+            }, comments = viewModel.comments) {
                 navigation.navigate(MyScreens.CategoryScreen.route + "/" + it)
+            }
+        }
+        AddToCart(viewModel.product.price, viewModel.isAddingProduct) {
+            if (NetworkChecker(context).isInternetConnected) {
+                viewModel.addToCart(productId){
+                    Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                Toast.makeText(context, "Connect to Internet", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -113,6 +126,7 @@ fun ProductItem(
     modifier: Modifier = Modifier,
     data: Product,
     comments: List<Comment>,
+    onAddNewComment: (String) -> Unit,
     onCategoryClicked: (String) -> Unit
 ) {
     Column(modifier = modifier.padding(end = 16.dp, start = 16.dp)) {
@@ -127,7 +141,7 @@ fun ProductItem(
             )
         ProductDetail(data, comments.size.toString())
         ProductComments(comments) {
-
+            onAddNewComment(it)
         }
     }
 }
@@ -216,29 +230,30 @@ fun AddNewCommentDialog(onDismiss: () -> Unit, onPositiveClicked: (String) -> Un
                     edtValue = userComment,
                     valueChanged = { userComment = it },
                     hint = "write something",
-                    icon = R.drawable .baseline_add_24)
+                    icon = R.drawable.baseline_add_24
+                )
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        TextButton(onClick = onDismiss) {
-                            Text("cancel", color = Color.Red)
-                        }
-                        Spacer(modifier = Modifier.width(8.dp))
-                        TextButton(onClick = {
-                            if (userComment.isNotEmpty() or userComment.isNotBlank()) {
-                                onPositiveClicked(userComment)
-                                onDismiss()
-                            } else {
-                                Toast.makeText(context, "write something", Toast.LENGTH_SHORT)
-                                    .show()
-                            }
-
-                        }) {
-                            Text("ok")
-                        }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = onDismiss) {
+                        Text("cancel", color = Color.Red)
                     }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    TextButton(onClick = {
+                        if (userComment.isNotEmpty() or userComment.isNotBlank()) {
+                            onPositiveClicked(userComment)
+                            onDismiss()
+                        } else {
+                            Toast.makeText(context, "write something", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+
+                    }) {
+                        Text("ok")
+                    }
+                }
 
 
             }
@@ -424,7 +439,8 @@ fun ProductToolBar(
 }
 
 @Composable
-fun AddToCart() {
+fun AddToCart(price: String, isAddingToCart: Boolean, onCartClicked: () -> Unit) {
+
 
 }
 

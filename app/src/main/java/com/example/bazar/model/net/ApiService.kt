@@ -1,6 +1,8 @@
 package com.example.bazar.model.net
 
+import com.example.bazar.model.data.AddNewCommentResponse
 import com.example.bazar.model.data.AdsResponse
+import com.example.bazar.model.data.CartResponse
 import com.example.bazar.model.data.CommentResponse
 import com.example.bazar.model.data.LoginResponse
 import com.example.bazar.model.data.ProductResponse
@@ -33,6 +35,10 @@ interface ApiService {
 
     @POST("getComments")
     suspend fun getComments(@Body jsonObject: JsonObject): CommentResponse
+    @POST("addNewComment")
+    suspend fun addComments(@Body jsonObject: JsonObject): AddNewCommentResponse
+    @POST("addToCart")
+    suspend fun addToCart(@Body jsonObject: JsonObject): CartResponse
 
 
 }
