@@ -5,12 +5,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.bazar.model.data.Comment
 import com.example.bazar.model.data.Product
+import com.example.bazar.model.repository.comment.CommentRepository
 import com.example.bazar.model.repository.product.ProductRepository
 import com.example.bazar.util.coroutineExceptionHandler
 import kotlinx.coroutines.launch
+import kotlin.collections.listOf
 
-class ProductViewModel(private val repository: ProductRepository) : ViewModel() {
+class ProductViewModel(
+    private val repository: ProductRepository,
+    private val commentRepository: CommentRepository
+) : ViewModel() {
     var product by mutableStateOf(
         Product(
             "",
@@ -25,14 +31,25 @@ class ProductViewModel(private val repository: ProductRepository) : ViewModel() 
             ""
         )
     )
+    var comments by mutableStateOf(listOf<Comment>())
 
-    private fun loadProductFromCache(productId: String) = viewModelScope.launch(coroutineExceptionHandler) {
-        product = repository.getProductById(productId)
-    }
+    private fun loadProductFromCache(productId: String) =
+        viewModelScope.launch(coroutineExceptionHandler) {
+            product = repository.getProductById(productId)
+        }
 
-     fun loadData(productId: String) = viewModelScope.launch {
+    private fun loadAllComments(productId: String) =
+        viewModelScope.launch(coroutineExceptionHandler) {
+            comments = commentRepository.getComments(productId)
+        }
+
+    fun loadData(productId: String, isConnected: Boolean) = viewModelScope.launch {
         loadProductFromCache(productId)
+        if (isConnected) {
+            loadAllComments(productId)
+        }
     }
+
 
 }
 

@@ -1,6 +1,7 @@
 package com.example.bazar.model.net
 
 import com.example.bazar.model.data.AdsResponse
+import com.example.bazar.model.data.CommentResponse
 import com.example.bazar.model.data.LoginResponse
 import com.example.bazar.model.data.ProductResponse
 import com.example.bazar.model.repository.TokenInMemory
@@ -29,8 +30,12 @@ interface ApiService {
 
     @GET("getSliderPics")
     suspend fun getAds(): AdsResponse
-}
 
+    @POST("getComments")
+    suspend fun getComments(@Body jsonObject: JsonObject): CommentResponse
+
+
+}
 fun createApiService(): ApiService {
     val okHttpClient = OkHttpClient().newBuilder().addInterceptor {
         val oldRequest = it.request()

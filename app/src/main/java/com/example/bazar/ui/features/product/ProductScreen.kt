@@ -57,6 +57,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.bazar.R
 import com.example.bazar.model.data.Ads
+import com.example.bazar.model.data.Comment
 import com.example.bazar.model.data.Product
 import com.example.bazar.ui.theme.MainAppTheme
 import com.example.bazar.ui.theme.blue
@@ -75,7 +76,7 @@ fun ProductScreen(productId: String) {
     val context = LocalContext.current
     val viewModel = getViewModel<ProductViewModel>()
     val navigation = getNavController()
-    viewModel.loadData(productId)
+    viewModel.loadData(productId, NetworkChecker(context).isInternetConnected)
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
         Column(
             modifier = Modifier
@@ -87,7 +88,7 @@ fun ProductScreen(productId: String) {
                 if (NetworkChecker(context).isInternetConnected) navigation.navigate(MyScreens.CartScreen.route)
                 else Toast.makeText(context, "connect to intenet", Toast.LENGTH_SHORT).show()
             }, onBackClicked = { navigation.popBackStack() })
-            ProductItem(data = viewModel.product) {
+            ProductItem(data = viewModel.product, comments = viewModel.comments) {
                 navigation.navigate(MyScreens.CategoryScreen.route + "/" + it)
             }
         }
@@ -96,7 +97,12 @@ fun ProductScreen(productId: String) {
 }
 
 @Composable
-fun ProductItem(modifier: Modifier = Modifier, data: Product, onCategoryClicked: (String) -> Unit) {
+fun ProductItem(
+    modifier: Modifier = Modifier,
+    data: Product,
+    comments: List<Comment>,
+    onCategoryClicked: (String) -> Unit
+) {
     Column(modifier = modifier.padding(end = 16.dp, start = 16.dp)) {
         ProductDesign(data) {
             onCategoryClicked(it)
@@ -107,7 +113,7 @@ fun ProductItem(modifier: Modifier = Modifier, data: Product, onCategoryClicked:
                 .padding(horizontal = 8.dp, vertical = 14.dp),
 
             )
-        ProductDetail(data, "5")
+        ProductDetail(data, comments.size.toString())
     }
 }
 
