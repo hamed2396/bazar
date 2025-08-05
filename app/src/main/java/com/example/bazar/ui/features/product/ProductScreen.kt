@@ -10,20 +10,25 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -58,12 +63,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.bazar.R
 import com.example.bazar.model.data.Ads
 import com.example.bazar.model.data.Comment
 import com.example.bazar.model.data.Product
+import com.example.bazar.ui.features.signin.GenericTextField
 import com.example.bazar.ui.theme.MainAppTheme
 import com.example.bazar.ui.theme.blue
 import com.example.bazar.ui.theme.cardViewBackGround
@@ -126,7 +133,7 @@ fun ProductItem(
 }
 
 @Composable
-fun ProductComments(comments: List<Comment>, onAddCommentClicked: () -> Unit) {
+fun ProductComments(comments: List<Comment>, onAddCommentClicked: (String) -> Unit) {
 
     var showDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -159,7 +166,7 @@ fun ProductComments(comments: List<Comment>, onAddCommentClicked: () -> Unit) {
         comments.forEach {
             CommentsBody(it)
         }
-    }else{
+    } else {
         TextButton(onClick = {
             if (NetworkChecker(context).isInternetConnected) {
                 showDialog = true
@@ -174,6 +181,70 @@ fun ProductComments(comments: List<Comment>, onAddCommentClicked: () -> Unit) {
             )
         }
     }
+    if (showDialog) {
+        AddNewCommentDialog(
+            onDismiss = { showDialog = false },
+            onPositiveClicked = {
+                onAddCommentClicked(it)
+            }
+        )
+    }
+}
+
+@Composable
+fun AddNewCommentDialog(onDismiss: () -> Unit, onPositiveClicked: (String) -> Unit) {
+    val context = LocalContext.current
+    var userComment by remember { mutableStateOf("") }
+    Dialog(onDismissRequest = onDismiss) {
+        Card(Modifier.fillMaxHeight(.22f), shape = shapes.medium) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "write your comment",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth(),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                GenericTextField(
+                    edtValue = userComment,
+                    valueChanged = { userComment = it },
+                    hint = "write something",
+                    icon = R.drawable .baseline_add_24)
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        TextButton(onClick = onDismiss) {
+                            Text("cancel", color = Color.Red)
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        TextButton(onClick = {
+                            if (userComment.isNotEmpty() or userComment.isNotBlank()) {
+                                onPositiveClicked(userComment)
+                                onDismiss()
+                            } else {
+                                Toast.makeText(context, "write something", Toast.LENGTH_SHORT)
+                                    .show()
+                            }
+
+                        }) {
+                            Text("ok")
+                        }
+                    }
+
+
+            }
+        }
+    }
+
 }
 
 @Composable
