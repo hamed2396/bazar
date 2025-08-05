@@ -22,16 +22,20 @@ class ProductRepositoryImpl(private val api: ApiService, private val dao: Produc
         return listOf()
     }
 
-    override suspend fun getAllProductsByCategory(category: String) =dao.getAllByCategory(category)
+    override suspend fun getAllProductsByCategory(category: String) = dao.getAllByCategory(category)
 
     override suspend fun getAds(isInternetConnected: Boolean): List<Ads> {
         if (isInternetConnected) {
             val data = api.getAds()
-            if (data.success){
+            if (data.success) {
                 return data.ads
             }
 
         }
         return listOf()
+    }
+
+    override suspend fun getProductById(productId: String): Product {
+        return dao.getProductById(productId)
     }
 }

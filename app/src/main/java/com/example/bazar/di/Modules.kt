@@ -46,6 +46,7 @@ val myModules = module {
 
     viewModel { (connected: Boolean) -> MainViewModel(get(), get()) }
     viewModel { CategoryViewModel(get()) }
-    viewModel { ProductViewModel() }
+
+    viewModel { ProductViewModel(get()) }
 
 }

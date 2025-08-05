@@ -68,6 +68,7 @@ fun ProductScreen(productId: String) {
     val context = LocalContext.current
     val viewModel = getViewModel<ProductViewModel>()
     val navigation = getNavController()
+    viewModel.loadData(productId)
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
         Column(
             modifier = Modifier
@@ -84,8 +85,20 @@ fun ProductScreen(productId: String) {
                     else Toast.makeText(context, "connect to intenet", Toast.LENGTH_SHORT).show()
                 },
                 onBackClicked = { navigation.popBackStack() })
+            ProductItem(data = viewModel.product) {
+                navigation.navigate(MyScreens.CategoryScreen.route + "/" + it)
+            }
         }
-        AddToCart()
+        }
+
+}
+
+@Composable
+fun ProductItem(modifier: Modifier = Modifier, data: Product, onCategoryClicked: (String) -> Unit) {
+    Column(modifier = modifier.padding( end = 16.dp, start = 16.dp)) {
+        ProductDesign(data) {
+            onCategoryClicked(it)
+        }
     }
 }
 
@@ -118,7 +131,7 @@ fun ProductDesign(data: Product, onCategoryClicked: (String) -> Unit) {
             text = "#" + data.category,
             fontSize = 13.sp,
 
-        )
+            )
     }
 
 }
@@ -132,7 +145,7 @@ fun ProductToolBar(
     onBackClicked: () -> Unit,
     onCartClicked: () -> Unit
 ) {
-    TopAppBar(
+    TopAppBar( modifier = Modifier.fillMaxWidth(),
         navigationIcon = {
             IconButton(onClick = onBackClicked) {
                 Icon(contentDescription = null, imageVector = Icons.AutoMirrored.Filled.ArrowBack)
