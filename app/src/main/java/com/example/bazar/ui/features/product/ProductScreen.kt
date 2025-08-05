@@ -4,9 +4,11 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,7 +25,10 @@ import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -50,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.example.bazar.R
 import com.example.bazar.model.data.Ads
 import com.example.bazar.model.data.Product
 import com.example.bazar.ui.theme.MainAppTheme
@@ -62,6 +68,7 @@ import com.example.bazar.util.NetworkChecker
 import dev.burnoo.cokoin.navigation.getNavController
 import dev.burnoo.cokoin.viewmodel.getViewModel
 import org.koin.core.parameter.parametersOf
+import kotlin.math.sin
 
 @Composable
 fun ProductScreen(productId: String) {
@@ -76,29 +83,107 @@ fun ProductScreen(productId: String) {
                 .verticalScroll(rememberScrollState())
                 .padding(bottom = 58.dp)
         ) {
-            ProductToolBar(
-                productName = "Details",
-                badgeNumber = 4,
-                onCartClicked = {
-                    if (NetworkChecker(context).isInternetConnected)
-                        navigation.navigate(MyScreens.CartScreen.route)
-                    else Toast.makeText(context, "connect to intenet", Toast.LENGTH_SHORT).show()
-                },
-                onBackClicked = { navigation.popBackStack() })
+            ProductToolBar(productName = "Details", badgeNumber = 4, onCartClicked = {
+                if (NetworkChecker(context).isInternetConnected) navigation.navigate(MyScreens.CartScreen.route)
+                else Toast.makeText(context, "connect to intenet", Toast.LENGTH_SHORT).show()
+            }, onBackClicked = { navigation.popBackStack() })
             ProductItem(data = viewModel.product) {
                 navigation.navigate(MyScreens.CategoryScreen.route + "/" + it)
             }
         }
-        }
+    }
 
 }
 
 @Composable
 fun ProductItem(modifier: Modifier = Modifier, data: Product, onCategoryClicked: (String) -> Unit) {
-    Column(modifier = modifier.padding( end = 16.dp, start = 16.dp)) {
+    Column(modifier = modifier.padding(end = 16.dp, start = 16.dp)) {
         ProductDesign(data) {
             onCategoryClicked(it)
         }
+        HorizontalDivider(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 14.dp),
+
+            )
+        ProductDetail(data, "5")
+    }
+}
+
+@Composable
+fun ProductDetail(product: Product, commentNumber: String) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Column {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Image(
+                    painter = painterResource(R.drawable.ic_details_comment),
+                    contentDescription = null,
+                    modifier = Modifier.size(26.dp)
+                )
+                Text(
+                    text = "$commentNumber Comments",
+                    modifier = Modifier.padding(start = 6.dp),
+                    fontSize = 13.sp
+                )
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(top = 8.dp)
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.ic_details_material),
+                    contentDescription = null,
+                    modifier = Modifier.size(26.dp)
+                )
+                Text(
+                    text = product.material,
+                    modifier = Modifier.padding(start = 6.dp),
+                    fontSize = 13.sp
+                )
+            }
+            Row(
+
+                modifier = Modifier.padding(top = 8.dp)
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.ic_details_sold),
+                    contentDescription = null,
+                    modifier = Modifier.size(26.dp)
+                )
+                Text(
+                    text = product.soldItem + " sold",
+                    modifier = Modifier.padding(start = 6.dp),
+                    fontSize = 13.sp
+                )
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Surface(color = blue, shape = shapes.large) {
+                        Text(
+                            modifier = Modifier.padding(vertical = 3.dp, horizontal = 8.dp),
+                            text = product.tags,
+                            color = Color.White,
+                            fontSize = 13.sp,
+
+
+                            )
+                    }
+
+                }
+            }
+            HorizontalDivider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 8.dp),
+
+                )
+        }
+
     }
 }
 
@@ -124,7 +209,8 @@ fun ProductDesign(data: Product, onCategoryClicked: (String) -> Unit) {
         text = data.detailText,
         fontSize = 15.sp,
         fontWeight = FontWeight.Medium,
-        modifier = Modifier.padding(4.dp), textAlign = TextAlign.Justify
+        modifier = Modifier.padding(4.dp),
+        textAlign = TextAlign.Justify
     )
     TextButton(onClick = { onCategoryClicked(data.category) }) {
         Text(
@@ -145,35 +231,31 @@ fun ProductToolBar(
     onBackClicked: () -> Unit,
     onCartClicked: () -> Unit
 ) {
-    TopAppBar( modifier = Modifier.fillMaxWidth(),
-        navigationIcon = {
-            IconButton(onClick = onBackClicked) {
-                Icon(contentDescription = null, imageVector = Icons.AutoMirrored.Filled.ArrowBack)
-            }
-        },
-        title = {
-            Text(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(end = 24.dp),
-                textAlign = TextAlign.Center,
-                text = productName
-            )
-        },
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
-        actions = {
-            IconButton(onClick = onCartClicked) {
-                if (badgeNumber == 0) {
+    TopAppBar(modifier = Modifier.fillMaxWidth(), navigationIcon = {
+        IconButton(onClick = onBackClicked) {
+            Icon(contentDescription = null, imageVector = Icons.AutoMirrored.Filled.ArrowBack)
+        }
+    }, title = {
+        Text(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(end = 24.dp),
+            textAlign = TextAlign.Center,
+            text = productName
+        )
+    }, colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White), actions = {
+        IconButton(onClick = onCartClicked) {
+            if (badgeNumber == 0) {
 
+                Icon(contentDescription = null, imageVector = Icons.Default.ShoppingCart)
+            } else {
+                BadgedBox(badge = { Text(text = badgeNumber.toString()) }) {
                     Icon(contentDescription = null, imageVector = Icons.Default.ShoppingCart)
-                } else {
-                    BadgedBox(badge = { Text(text = badgeNumber.toString()) }) {
-                        Icon(contentDescription = null, imageVector = Icons.Default.ShoppingCart)
-                    }
                 }
             }
-
         }
+
+    }
 
     )
 
