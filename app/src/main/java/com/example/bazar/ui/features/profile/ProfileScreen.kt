@@ -18,6 +18,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -51,6 +52,7 @@ import com.example.bazar.ui.theme.shapes
 import com.example.bazar.util.MyScreens
 import dev.burnoo.cokoin.navigation.getNavController
 import dev.burnoo.cokoin.viewmodel.getViewModel
+import java.nio.file.WatchEvent
 
 @Composable
 fun ProfileScreen() {
@@ -79,7 +81,31 @@ fun ProfileScreen() {
 }
 
 @Composable
-fun UserDataSection() {
+fun UserDataSection(
+    subject: String, text: String, onLocationClicked: (() -> Unit)?
+) {
+
+    Column(
+        modifier = Modifier
+            .clickable { onLocationClicked?.invoke() }
+            .padding(top = 16.dp, start = 16.dp, end = 16.dp),
+        horizontalAlignment = Alignment.Start
+    ) {
+        Text(
+            text = subject,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = blue
+        )
+        Text(modifier = Modifier.padding(top = 2.dp),
+            text = text,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+
+        )
+        Divider(thickness = .5.dp, color = blue, modifier = Modifier.padding(top = 16.dp))
+    }
+
 
 }
 
