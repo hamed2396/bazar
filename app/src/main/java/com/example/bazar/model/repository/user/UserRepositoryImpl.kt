@@ -5,6 +5,7 @@ import com.example.bazar.model.net.ApiService
 import com.example.bazar.model.repository.TokenInMemory
 import com.example.bazar.util.Constants.VALUE_SUCCESS
 import com.google.gson.JsonObject
+import androidx.core.content.edit
 
 class UserRepositoryImpl(private val api: ApiService, private val sharedPrefs: SharedPreferences) :
     UserRepository {
@@ -25,6 +26,7 @@ class UserRepositoryImpl(private val api: ApiService, private val sharedPrefs: S
             TokenInMemory.refreshToken(username = name, token = result.token)
             saveToken(result.token)
             saveUserName(name)
+            saveUserLoginTime()
             VALUE_SUCCESS
 
         } else {
@@ -50,7 +52,7 @@ class UserRepositoryImpl(private val api: ApiService, private val sharedPrefs: S
 
     override fun singOut() {
         TokenInMemory.refreshToken(null, null)
-        sharedPrefs.edit().clear().apply()
+        sharedPrefs.edit { clear() }
     }
 
     override fun loadToken() {
@@ -58,15 +60,39 @@ class UserRepositoryImpl(private val api: ApiService, private val sharedPrefs: S
     }
 
     override fun saveToken(token: String) {
-        sharedPrefs.edit().putString("token", token).apply()
+        sharedPrefs.edit { putString("token", token) }
     }
 
     override fun getToken(): String = sharedPrefs.getString("token", "")!!
 
 
     override fun saveUserName(name: String) {
-        sharedPrefs.edit().putString("username", name).apply()
+        sharedPrefs.edit { putString("username", name) }
     }
 
     override fun getUserName(): String = sharedPrefs.getString("username", "")!!
+
+    override fun saveUserLocation(address: String, postalCode: String) {
+        sharedPrefs.edit {
+            putString("address", address)
+            putString("postalCode", postalCode)
+        }
+
+
+    }
+
+    override fun getUserLocation(): Pair<String, String> {
+        val address = sharedPrefs.getString("address", "click to add")!!
+        val postalCode = sharedPrefs.getString("postalCode", "click to add")!!
+        return Pair(address, postalCode)
+    }
+
+    override fun saveUserLoginTime() {
+        val now = System.currentTimeMillis()
+        sharedPrefs.edit { putString("login_time", now.toString()) }
+    }
+
+    override fun getUserLoginTime(): String {
+        return sharedPrefs.getString("login_time", "")!!
+    }
 }

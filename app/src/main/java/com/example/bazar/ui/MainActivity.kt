@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -17,6 +18,7 @@ import com.example.bazar.ui.features.IntroScreen
 import com.example.bazar.ui.features.cateory.CategoryScreen
 import com.example.bazar.ui.features.main.MainScreen
 import com.example.bazar.ui.features.product.ProductScreen
+import com.example.bazar.ui.features.profile.ProfileScreen
 import com.example.bazar.ui.features.signin.SignInScreen
 import com.example.bazar.ui.features.signup.SignUpScreen
 import com.example.bazar.ui.theme.MainAppTheme
@@ -104,19 +106,10 @@ fun DuniBazaarUi() {
 }
 
 
-
 @Composable
-fun CartScreen() {
-    TODO("Not yet implemented")
+fun CartScreen(modifier: Modifier = Modifier) {
+
 }
-
-@Composable
-fun ProfileScreen() {
-    TODO("Not yet implemented")
-}
-
-
-
 
 
 @Preview(showBackground = true)
