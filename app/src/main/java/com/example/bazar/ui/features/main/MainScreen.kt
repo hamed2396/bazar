@@ -84,27 +84,40 @@ fun MainScreen() {
             LinearProgressIndicator(color = blue, modifier = Modifier.fillMaxWidth())
         }
         TopToolBar(
-            onCartClicked = { navigation.navigate(MyScreens.CartScreen.route) },
+            onCartClicked = {
+                if (NetworkChecker(context).isInternetConnected){
+                    navigation.navigate(MyScreens.CartScreen.route)
+                }else{
+                    Toast.makeText(context, "connect to Internet", Toast.LENGTH_SHORT).show()
+                }
+
+            },
             onProfileClicked = {
                 navigation.navigate(
                     MyScreens.ProfileScreen.route
                 )
-            }, badgeNumber = viewModel.badgeNumber)
-        CategoryBar(Constants.CATEGORY){
+            }, badgeNumber = viewModel.badgeNumber
+        )
+        CategoryBar(Constants.CATEGORY) {
             navigation.navigate(MyScreens.CategoryScreen.route + "/" + it)
         }
 
         val productDataState = viewModel.products
         val adsDataState = viewModel.ads
-        ProductSubjectList(Constants.TAGS, productDataState, adsDataState){
-            navigation.navigate(MyScreens.ProductScreen.route+ "/" + it)
+        ProductSubjectList(Constants.TAGS, productDataState, adsDataState) {
+            navigation.navigate(MyScreens.ProductScreen.route + "/" + it)
         }
 
     }
 }
 
 @Composable
-fun ProductSubjectList(tags: List<String>, products: List<Product>, ads: List<Ads>,onProductClicked:(String)->Unit) {
+fun ProductSubjectList(
+    tags: List<String>,
+    products: List<Product>,
+    ads: List<Ads>,
+    onProductClicked: (String) -> Unit
+) {
 
 
     if (products.isNotEmpty()) {
@@ -112,46 +125,45 @@ fun ProductSubjectList(tags: List<String>, products: List<Product>, ads: List<Ad
             val tagData = products.filter { product ->
                 product.tags == tags[index]
             }
-            Log.e("myTag", "$tagData", )
-            ProductSubject(tags[index], tagData.shuffled(),onProductClicked)
+            Log.e("myTag", "$tagData")
+            ProductSubject(tags[index], tagData.shuffled(), onProductClicked)
             if (ads.size >= 2) {
 
-                if (index == 1 || index == 2) BigPicture(ads[index.minus(1)],onProductClicked)
+                if (index == 1 || index == 2) BigPicture(ads[index.minus(1)], onProductClicked)
             }
         }
     }
-
 
 
 }
 
 
 @Composable
-fun ProductSubject(subject: String, data: List<Product>,onProductClicked:(String)->Unit) {
+fun ProductSubject(subject: String, data: List<Product>, onProductClicked: (String) -> Unit) {
     Column(modifier = Modifier.padding(top = 32.dp)) {
         Text(
             text = subject,
             modifier = Modifier.padding(start = 16.dp),
             style = MaterialTheme.typography.titleLarge
         )
-        ProductBar(data,onProductClicked)
+        ProductBar(data, onProductClicked)
     }
 }
 
 @Composable
-fun ProductBar(data: List<Product>,onProductClicked: (String) -> Unit) {
+fun ProductBar(data: List<Product>, onProductClicked: (String) -> Unit) {
     LazyRow(
         modifier = Modifier.padding(top = 16.dp), contentPadding = PaddingValues(end = 16.dp)
     ) {
         items(data.size) {
 
-            ProductItem(data[it],onProductClicked)
+            ProductItem(data[it], onProductClicked)
         }
     }
 }
 
 @Composable
-fun ProductItem(product: Product,onProductClicked:(String)->Unit) {
+fun ProductItem(product: Product, onProductClicked: (String) -> Unit) {
     val context = LocalContext.current
     Card(
         modifier = Modifier
@@ -207,17 +219,16 @@ fun TopToolBar(onCartClicked: () -> Unit, badgeNumber: Int, onProfileClicked: ()
                 badge = {
                     Badge(
                         modifier = Modifier
-                            .offset(x = (-2).dp, y = (-6).dp)
-                            .scale(.8f) // 📍 جابه‌جایی Badge
+                            .offset(x = (-6).dp)
+
                     ) {
                         Text(text = badgeNumber.toString())
                     }
                 }
             ) {
-                Icon(
-                    imageVector = Icons.Default.ShoppingCart,
-                    contentDescription = "Shopping Cart"
-                )
+                IconButton(onClick = { onCartClicked() }) {
+                    Icon(Icons.Default.ShoppingCart, null)
+                }
             }
 
 
@@ -238,7 +249,7 @@ fun CategoryBar(categoryList: List<Pair<String, Int>>, onCategoryClicked: (Strin
 }
 
 @Composable
-fun BigPicture(ads: Ads,onProductClicked:(String)->Unit) {
+fun BigPicture(ads: Ads, onProductClicked: (String) -> Unit) {
     val context = LocalContext.current
     AsyncImage(
         modifier = Modifier

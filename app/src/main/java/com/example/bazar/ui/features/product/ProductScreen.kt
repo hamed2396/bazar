@@ -117,11 +117,12 @@ fun ProductScreen(productId: String) {
                     else Toast.makeText(context, "connect to intenet", Toast.LENGTH_SHORT).show()
                 },
                 onBackClicked = { navigation.popBackStack() })
+            val comment= if (NetworkChecker(context).isInternetConnected) viewModel.comments else listOf()
             ProductItem(data = viewModel.product, onAddNewComment = {
                 viewModel.addNewComment(productId, it) {
                     Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
                 }
-            }, comments = viewModel.comments) {
+            }, comments = comment) {
                 navigation.navigate(MyScreens.CategoryScreen.route + "/" + it)
             }
         }
@@ -309,6 +310,8 @@ fun CommentsBody(comment: Comment) {
 
 @Composable
 fun ProductDetail(product: Product, commentNumber: String) {
+    val context=LocalContext.current
+    val commentCount=if (NetworkChecker(context).isInternetConnected) "$commentNumber Comments" else "No Internet"
     Row(
         modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -320,7 +323,7 @@ fun ProductDetail(product: Product, commentNumber: String) {
                     modifier = Modifier.size(26.dp)
                 )
                 Text(
-                    text = "$commentNumber Comments",
+                    text = commentCount,
                     modifier = Modifier.padding(start = 6.dp),
                     fontSize = 13.sp
                 )
@@ -445,21 +448,20 @@ fun ProductToolBar(
 
                     Icon(contentDescription = null, imageVector = Icons.Default.ShoppingCart)
                 } else {
-                    BadgedBox(
+                    BadgedBox(modifier=modifier.offset(x = (-8).dp),
                         badge = {
                             Badge(
                                 modifier = Modifier
-                                    .offset(x = (-2).dp, y = (-6).dp)
-                                    .scale(.8f) // 📍 جابه‌جایی Badge
+                                    .offset(x = (-6).dp).scale(.8f)
+
                             ) {
                                 Text(text = badgeNumber.toString())
                             }
                         }
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.ShoppingCart,
-                            contentDescription = "Shopping Cart"
-                        )
+                        IconButton(onClick = { onCartClicked() }) {
+                            Icon(Icons.Default.ShoppingCart, null)
+                        }
                     }
 
 
