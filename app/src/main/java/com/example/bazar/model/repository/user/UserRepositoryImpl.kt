@@ -1,6 +1,7 @@
 package com.example.bazar.model.repository.user
 
 import android.content.SharedPreferences
+import android.util.Log
 import com.example.bazar.model.net.ApiService
 import com.example.bazar.model.repository.TokenInMemory
 import com.example.bazar.util.Constants.VALUE_SUCCESS
@@ -89,6 +90,7 @@ class UserRepositoryImpl(private val api: ApiService, private val sharedPrefs: S
 
     override fun saveUserLoginTime() {
         val now = System.currentTimeMillis()
+        Log.e("myTagg", "$now dd", )
         sharedPrefs.edit { putString("login_time", now.toString()) }
     }
 
