@@ -31,4 +31,7 @@ class ProfileViewModel(private val repository: UserRepository) : ViewModel() {
     fun signOut() = viewModelScope.launch {
         repository.singOut()
     }
+    fun setUserLocation(address: String,postalCode: String){
+        repository.saveUserLocation(address,postalCode)
+    }
 }
