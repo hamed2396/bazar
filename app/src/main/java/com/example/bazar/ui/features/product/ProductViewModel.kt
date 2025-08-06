@@ -1,6 +1,7 @@
 package com.example.bazar.ui.features.product
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -36,6 +37,7 @@ class ProductViewModel(
     )
     var comments by mutableStateOf(listOf<Comment>())
     var isAddingProduct by mutableStateOf(false)
+    var badgeNumber by mutableIntStateOf(0)
 
     private fun loadProductFromCache(productId: String) =
         viewModelScope.launch(coroutineExceptionHandler) {
@@ -50,6 +52,7 @@ class ProductViewModel(
     fun addNewComment(productId: String, text: String, onSuccess: (String) -> Unit) =
         viewModelScope.launch(coroutineExceptionHandler) {
             commentRepository.addNewComment(productId, text, onSuccess)
+
             delay(100)
             comments = commentRepository.getComments(productId)
         }
@@ -66,11 +69,14 @@ class ProductViewModel(
         }
 
     }
-
+    fun loadBadgeNumber()=viewModelScope.launch(coroutineExceptionHandler) {
+        badgeNumber=cartRepository.getCartSize()
+    }
     fun loadData(productId: String, isConnected: Boolean) = viewModelScope.launch {
         loadProductFromCache(productId)
         if (isConnected) {
             loadAllComments(productId)
+            loadBadgeNumber()
         }
     }
 

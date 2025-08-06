@@ -2,8 +2,14 @@ package com.example.bazar.ui.features.product
 
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,11 +21,13 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -27,6 +35,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -53,6 +62,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -67,6 +77,7 @@ import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.bazar.R
+import com.example.bazar.androidColors
 import com.example.bazar.model.data.Ads
 import com.example.bazar.model.data.Comment
 import com.example.bazar.model.data.Product
@@ -74,10 +85,12 @@ import com.example.bazar.ui.features.signin.GenericTextField
 import com.example.bazar.ui.theme.MainAppTheme
 import com.example.bazar.ui.theme.blue
 import com.example.bazar.ui.theme.cardViewBackGround
+import com.example.bazar.ui.theme.priceItemBackGround
 import com.example.bazar.ui.theme.shapes
 import com.example.bazar.util.Constants
 import com.example.bazar.util.MyScreens
 import com.example.bazar.util.NetworkChecker
+import com.example.bazar.util.stylePrice
 import dev.burnoo.cokoin.navigation.getNavController
 import dev.burnoo.cokoin.viewmodel.getViewModel
 import org.koin.core.parameter.parametersOf
@@ -96,10 +109,14 @@ fun ProductScreen(productId: String) {
                 .verticalScroll(rememberScrollState())
                 .padding(bottom = 58.dp)
         ) {
-            ProductToolBar(productName = "Details", badgeNumber = 4, onCartClicked = {
-                if (NetworkChecker(context).isInternetConnected) navigation.navigate(MyScreens.CartScreen.route)
-                else Toast.makeText(context, "connect to intenet", Toast.LENGTH_SHORT).show()
-            }, onBackClicked = { navigation.popBackStack() })
+            ProductToolBar(
+                productName = "Details",
+                badgeNumber = viewModel.badgeNumber,
+                onCartClicked = {
+                    if (NetworkChecker(context).isInternetConnected) navigation.navigate(MyScreens.CartScreen.route)
+                    else Toast.makeText(context, "connect to intenet", Toast.LENGTH_SHORT).show()
+                },
+                onBackClicked = { navigation.popBackStack() })
             ProductItem(data = viewModel.product, onAddNewComment = {
                 viewModel.addNewComment(productId, it) {
                     Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
@@ -110,7 +127,7 @@ fun ProductScreen(productId: String) {
         }
         AddToCart(viewModel.product.price, viewModel.isAddingProduct) {
             if (NetworkChecker(context).isInternetConnected) {
-                viewModel.addToCart(productId){
+                viewModel.addToCart(productId) {
                     Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
                 }
             } else {
@@ -408,31 +425,48 @@ fun ProductToolBar(
     onBackClicked: () -> Unit,
     onCartClicked: () -> Unit
 ) {
-    TopAppBar(modifier = Modifier.fillMaxWidth(), navigationIcon = {
-        IconButton(onClick = onBackClicked) {
-            Icon(contentDescription = null, imageVector = Icons.AutoMirrored.Filled.ArrowBack)
-        }
-    }, title = {
-        Text(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(end = 24.dp),
-            textAlign = TextAlign.Center,
-            text = productName
-        )
-    }, colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White), actions = {
-        IconButton(onClick = onCartClicked) {
-            if (badgeNumber == 0) {
+    TopAppBar(
+        modifier = Modifier.fillMaxWidth(), navigationIcon = {
+            IconButton(onClick = onBackClicked) {
+                Icon(contentDescription = null, imageVector = Icons.AutoMirrored.Filled.ArrowBack)
+            }
+        }, title = {
+            Text(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(end = 24.dp),
+                textAlign = TextAlign.Center,
+                text = productName
+            )
+        }, colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
+        actions = {
+            IconButton(onClick = onCartClicked) {
+                if (badgeNumber == 0) {
 
-                Icon(contentDescription = null, imageVector = Icons.Default.ShoppingCart)
-            } else {
-                BadgedBox(badge = { Text(text = badgeNumber.toString()) }) {
                     Icon(contentDescription = null, imageVector = Icons.Default.ShoppingCart)
+                } else {
+                    BadgedBox(
+                        badge = {
+                            Badge(
+                                modifier = Modifier
+                                    .offset(x = (-2).dp, y = (-6).dp)
+                                    .scale(.8f) // 📍 جابه‌جایی Badge
+                            ) {
+                                Text(text = badgeNumber.toString())
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ShoppingCart,
+                            contentDescription = "Shopping Cart"
+                        )
+                    }
+
+
                 }
             }
-        }
 
-    }
+        }
 
     )
 
@@ -441,9 +475,110 @@ fun ProductToolBar(
 @Composable
 fun AddToCart(price: String, isAddingToCart: Boolean, onCartClicked: () -> Unit) {
 
+    Surface(
+        color = androidColors.White, modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(.09f)
+    ) {
 
+        Row(
+            modifier = Modifier.fillMaxSize(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Button(
+                onClick = onCartClicked,
+                modifier = Modifier
+                    .padding(16.dp)
+                    .size(200.dp, 70.dp), shape = shapes.medium
+            ) {
+                if (isAddingToCart) {
+                    DotsTyping()
+
+                } else {
+                    Text(
+                        "add product to cart",
+                        color = androidColors.White,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.padding(2.dp)
+                    )
+                }
+
+            }
+            Surface(
+                shape = shapes.medium,
+                color = priceItemBackGround,
+                modifier = Modifier.padding(end = 8.dp)
+            ) {
+                Text(
+                    "${stylePrice(price)} tomans",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
+                )
+            }
+
+        }
+
+    }
 }
 
+@Composable
+fun DotsTyping() {
+
+    val dotSize = 10.dp
+    val delayUnit = 350
+    val maxOffset = 10f
+
+    @Composable
+    fun Dot(
+        offset: Float
+    ) = Spacer(
+        Modifier
+            .size(dotSize)
+            .offset(y = -offset.dp)
+            .background(
+                color = Color.White,
+                shape = CircleShape
+            )
+            .padding(start = 8.dp, end = 8.dp)
+    )
+
+    val infiniteTransition = rememberInfiniteTransition()
+
+    @Composable
+    fun animateOffsetWithDelay(delay: Int) = infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 0f,
+        animationSpec = infiniteRepeatable(
+            animation = keyframes {
+                durationMillis = delayUnit * 4
+                0f at delay with LinearEasing
+                maxOffset at delay + delayUnit with LinearEasing
+                0f at delay + delayUnit * 2
+            }
+        )
+    )
+
+    val offset1 by animateOffsetWithDelay(0)
+    val offset2 by animateOffsetWithDelay(delayUnit)
+    val offset3 by animateOffsetWithDelay(delayUnit * 2)
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier.padding(top = maxOffset.dp)
+    ) {
+        val spaceSize = 2.dp
+
+        Dot(offset1)
+        Spacer(Modifier.width(spaceSize))
+        Dot(offset2)
+        Spacer(Modifier.width(spaceSize))
+        Dot(offset3)
+    }
+}
 
 @Preview
 @Composable

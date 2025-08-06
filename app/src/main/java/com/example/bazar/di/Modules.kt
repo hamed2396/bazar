@@ -48,7 +48,7 @@ val myModules = module {
         ProductRepositoryImpl(get(), get<AppDataBase>().productDao())
     } bind ProductRepository::class
 
-    viewModel { (connected: Boolean) -> MainViewModel(get(), get()) }
+    viewModel { (connected: Boolean) -> MainViewModel(get(), get(),get()) }
     viewModel { CategoryViewModel(get()) }
 
     single {

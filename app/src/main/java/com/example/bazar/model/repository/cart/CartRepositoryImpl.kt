@@ -14,6 +14,18 @@ class CartRepositoryImpl(private val api: ApiService) : CartRepository {
         val result = api.addToCart(jsonObject)
         return result.success
     }
+
+    override suspend fun getCartSize(): Int {
+        val result = api.getUserCart()
+        var counter = 0
+        if (result.success) {
+            result.productList.forEach {
+                counter += (it.quantity ?: "0").toInt()
+            }
+            return counter
+        }
+        return 0
+    }
 }
 
 

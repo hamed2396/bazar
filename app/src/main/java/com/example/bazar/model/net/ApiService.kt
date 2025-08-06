@@ -6,6 +6,7 @@ import com.example.bazar.model.data.CartResponse
 import com.example.bazar.model.data.CommentResponse
 import com.example.bazar.model.data.LoginResponse
 import com.example.bazar.model.data.ProductResponse
+import com.example.bazar.model.data.UserCartInfo
 import com.example.bazar.model.repository.TokenInMemory
 import com.example.bazar.util.Constants
 import com.google.gson.JsonObject
@@ -35,13 +36,17 @@ interface ApiService {
 
     @POST("getComments")
     suspend fun getComments(@Body jsonObject: JsonObject): CommentResponse
+
     @POST("addNewComment")
     suspend fun addComments(@Body jsonObject: JsonObject): AddNewCommentResponse
+
     @POST("addToCart")
     suspend fun addToCart(@Body jsonObject: JsonObject): CartResponse
-
+    @GET("getUserCart")
+    suspend fun getUserCart(): UserCartInfo
 
 }
+
 fun createApiService(): ApiService {
     val okHttpClient = OkHttpClient().newBuilder().addInterceptor {
         val oldRequest = it.request()

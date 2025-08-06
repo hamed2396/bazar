@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
@@ -17,6 +18,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,6 +37,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -68,6 +72,7 @@ fun MainScreen() {
     val viewModel =
         getViewModel<MainViewModel>(parameters = { parametersOf(NetworkChecker(context).isInternetConnected) })
     val navigation = getNavController()
+    if (NetworkChecker(context).isInternetConnected) viewModel.loadBadgeNumber()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -84,7 +89,7 @@ fun MainScreen() {
                 navigation.navigate(
                     MyScreens.ProfileScreen.route
                 )
-            })
+            }, badgeNumber = viewModel.badgeNumber)
         CategoryBar(Constants.CATEGORY){
             navigation.navigate(MyScreens.CategoryScreen.route + "/" + it)
         }
@@ -190,12 +195,32 @@ fun ProductItem(product: Product,onProductClicked:(String)->Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopToolBar(onCartClicked: () -> Unit, onProfileClicked: () -> Unit) {
+fun TopToolBar(onCartClicked: () -> Unit, badgeNumber: Int, onProfileClicked: () -> Unit) {
     TopAppBar(colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White), title = {
         Text(text = "Duni Bazzar")
     }, actions = {
-        IconButton(onClick = { onCartClicked() }) {
-            Icon(Icons.Default.ShoppingCart, null)
+        if (badgeNumber == 0) {
+
+            Icon(contentDescription = null, imageVector = Icons.Default.ShoppingCart)
+        } else {
+            BadgedBox(
+                badge = {
+                    Badge(
+                        modifier = Modifier
+                            .offset(x = (-2).dp, y = (-6).dp)
+                            .scale(.8f) // 📍 جابه‌جایی Badge
+                    ) {
+                        Text(text = badgeNumber.toString())
+                    }
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ShoppingCart,
+                    contentDescription = "Shopping Cart"
+                )
+            }
+
+
         }
         IconButton(onClick = { onProfileClicked() }) {
             Icon(Icons.Default.Person, null)
