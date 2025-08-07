@@ -14,6 +14,7 @@ import com.example.bazar.model.repository.product.ProductRepository
 import com.example.bazar.model.repository.product.ProductRepositoryImpl
 import com.example.bazar.model.repository.user.UserRepository
 import com.example.bazar.model.repository.user.UserRepositoryImpl
+import com.example.bazar.ui.features.cart.CartViewModel
 import com.example.bazar.ui.features.cateory.CategoryViewModel
 import com.example.bazar.ui.features.main.MainViewModel
 import com.example.bazar.ui.features.product.ProductViewModel
@@ -56,10 +57,11 @@ val myModules = module {
         CommentRepositoryImpl(get())
     } bind CommentRepository::class
     single {
-        CartRepositoryImpl(get())
+        CartRepositoryImpl(get(),get())
 
     } bind CartRepository::class
     viewModel { ProductViewModel(get(), get(),get()) }
     viewModel { ProfileViewModel(get()) }
+    viewModel { CartViewModel(get(),get()) }
 
 }

@@ -3,9 +3,11 @@ package com.example.bazar.model.net
 import com.example.bazar.model.data.AddNewCommentResponse
 import com.example.bazar.model.data.AdsResponse
 import com.example.bazar.model.data.CartResponse
+import com.example.bazar.model.data.CheckOut
 import com.example.bazar.model.data.CommentResponse
 import com.example.bazar.model.data.LoginResponse
 import com.example.bazar.model.data.ProductResponse
+import com.example.bazar.model.data.SubmitOrder
 import com.example.bazar.model.data.UserCartInfo
 import com.example.bazar.model.repository.TokenInMemory
 import com.example.bazar.util.Constants
@@ -44,6 +46,19 @@ interface ApiService {
     suspend fun addToCart(@Body jsonObject: JsonObject): CartResponse
     @GET("getUserCart")
     suspend fun getUserCart(): UserCartInfo
+    @POST("addToCart")
+    suspend fun addProductToCart(@Body jsonObject: JsonObject): CartResponse
+
+
+
+    @POST("removeFromCart")
+    suspend fun removeFromCart(@Body jsonObject: JsonObject): CartResponse
+
+    @POST("submitOrder")
+    suspend fun submitOrder(@Body jsonObject: JsonObject): SubmitOrder
+
+    @POST("checkout")
+    suspend fun checkOut(@Body jsonObject: JsonObject) : CheckOut
 
 }
 

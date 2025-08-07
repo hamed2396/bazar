@@ -9,8 +9,10 @@ import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,9 +37,11 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -54,7 +58,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,6 +70,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -117,7 +124,8 @@ fun ProductScreen(productId: String) {
                     else Toast.makeText(context, "connect to intenet", Toast.LENGTH_SHORT).show()
                 },
                 onBackClicked = { navigation.popBackStack() })
-            val comment= if (NetworkChecker(context).isInternetConnected) viewModel.comments else listOf()
+            val comment =
+                if (NetworkChecker(context).isInternetConnected) viewModel.comments else listOf()
             ProductItem(data = viewModel.product, onAddNewComment = {
                 viewModel.addNewComment(productId, it) {
                     Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
@@ -255,8 +263,13 @@ fun AddNewCommentDialog(onDismiss: () -> Unit, onPositiveClicked: (String) -> Un
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
                 ) {
-                    TextButton(onClick = onDismiss) {
-                        Text("cancel", color = Color.Red)
+
+
+                    TextButton(
+                        onClick = onDismiss,
+
+                    ) {
+                        Text("cancel", color = Red,)
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     TextButton(onClick = {
@@ -310,8 +323,9 @@ fun CommentsBody(comment: Comment) {
 
 @Composable
 fun ProductDetail(product: Product, commentNumber: String) {
-    val context=LocalContext.current
-    val commentCount=if (NetworkChecker(context).isInternetConnected) "$commentNumber Comments" else "No Internet"
+    val context = LocalContext.current
+    val commentCount =
+        if (NetworkChecker(context).isInternetConnected) "$commentNumber Comments" else "No Internet"
     Row(
         modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -448,11 +462,13 @@ fun ProductToolBar(
 
                     Icon(contentDescription = null, imageVector = Icons.Default.ShoppingCart)
                 } else {
-                    BadgedBox(modifier=modifier.offset(x = (-8).dp),
+                    BadgedBox(
+                        modifier = modifier.offset(x = (-8).dp),
                         badge = {
                             Badge(
                                 modifier = Modifier
-                                    .offset(x = (-6).dp).scale(.8f)
+                                    .offset(x = (-6).dp)
+                                    .scale(.8f)
 
                             ) {
                                 Text(text = badgeNumber.toString())
