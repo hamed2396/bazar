@@ -1,4 +1,4 @@
-## Movie App 🎬
+
 ## 🛍️ bazzar 🛒
 
 Discover a seamless shopping experience with ShopSavvy, a modern Android app built using Kotlin, **MVVM****, Retrofit, and **Jetpack Compose****! Browse a wide range of products 📦, add items to your cart 🛍️, and securely purchase with ease 💳. The app’s sleek, user-friendly interface 🎨, powered by Compose, ensures smooth navigation, while Retrofit handles fast and reliable API calls 🌐. With MVVM architecture, enjoy a responsive and scalable shopping journey 🚀. Shop smarter, faster, and with style! 😎✨
